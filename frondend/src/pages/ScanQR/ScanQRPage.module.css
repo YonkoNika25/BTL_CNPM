@@ -1,0 +1,75 @@
+/* src/frondend/src/pages/ScanQR/ScanQRPage.module.css */
+.container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .container h1 {
+      margin-bottom: 1.5rem;
+  }
+  
+  /* Style cho div mà thư viện QR sẽ sử dụng */
+  .qrReaderElement {
+      margin: 1.5rem auto;
+      max-width: 400px; /* Hoặc kích thước bạn muốn */
+      min-height: 250px; /* Chiều cao tối thiểu để thấy */
+      border: 1px solid #ddd;
+      background-color: #eee; /* Màu nền chờ camera load */
+      position: relative; /* Cần thiết cho một số UI của thư viện */
+      overflow: hidden; /* Tránh tràn viền */
+  }
+  
+  /* Có thể cần điều chỉnh thêm nếu UI mặc định của thư viện không đẹp */
+  .qrReaderElement video { /* Target video element bên trong nếu cần */
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+  }
+  
+  
+  .loading {
+      margin-top: 1rem;
+      color: #007bff;
+  }
+  
+  .error {
+      margin-top: 1rem;
+      color: #dc3545;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.25rem;
+  }
+  
+  .success {
+      margin-top: 1rem;
+      color: #28a745;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.25rem;
+  }
+  
+  .backButton {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1rem;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background-color 0.2s ease;
+  }
+  .backButton:hover {
+      background-color: #5a6268;
+  }
+  .backButton:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+  }

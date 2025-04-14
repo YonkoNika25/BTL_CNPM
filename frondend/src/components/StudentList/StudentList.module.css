@@ -1,0 +1,28 @@
+.container{
+    margin-top: 1rem;
+}
+.list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .item:last-child {
+    border-bottom: none; /* Remove border from the last item */
+  }
+
+  .removeButton {
+    background-color: #f44336; /* Red */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }

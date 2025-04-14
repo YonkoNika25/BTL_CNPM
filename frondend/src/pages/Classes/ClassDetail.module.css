@@ -1,0 +1,163 @@
+/* src/frondend/src/pages/Classes/ClassDetail.module.css */
+.container {
+  max-width: 900px; /* Độ rộng tối đa của nội dung trang */
+  margin: 2rem auto; /* Căn giữa và tạo khoảng cách trên dưới */
+  padding: 1.5rem 2rem; /* Khoảng cách bên trong container */
+  background-color: #ffffff; /* Nền trắng */
+  border-radius: 8px; /* Bo góc */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Đổ bóng nhẹ */
+  font-family: sans-serif; /* Font chữ cơ bản */
+}
+
+.title {
+  font-size: 1.8rem; /* Cỡ chữ tiêu đề chính */
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 600; /* Đậm hơn một chút */
+}
+
+.teacherInfo {
+    font-style: italic;
+    color: #555;
+    margin-bottom: 1.5rem; /* Khoảng cách dưới thông tin GV */
+    font-size: 0.95rem;
+}
+
+/* Container cho các nút Edit/Delete */
+.buttonContainer {
+  margin-bottom: 1.5rem; /* Khoảng cách dưới các nút */
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee; /* Đường kẻ phân cách nhẹ */
+}
+
+/* Style chung cho các nút chính và link hành động */
+.editButton, .deleteButton, .qrButton, .link, .sendButton, .backButton {
+  padding: 0.6rem 1.2rem; /* Kích thước nút */
+  margin-right: 0.75rem; /* Khoảng cách giữa các nút */
+  margin-bottom: 0.5rem; /* Khoảng cách nếu nút xuống dòng */
+  border: none;
+  border-radius: 5px; /* Bo góc nhiều hơn */
+  cursor: pointer;
+  font-size: 0.9rem; /* Cỡ chữ nút */
+  transition: background-color 0.2s ease, transform 0.1s ease; /* Hiệu ứng hover */
+  color: white;
+  text-decoration: none; /* Cho Link */
+  display: inline-block; /* Cho Link */
+  text-align: center;
+  vertical-align: middle; /* Căn giữa text trong nút */
+}
+.editButton:active, .deleteButton:active, .qrButton:active, .link:active, .sendButton:active, .backButton:active {
+    transform: translateY(1px); /* Hiệu ứng nhấn nút */
+}
+
+/* Màu sắc cụ thể cho từng nút */
+.editButton { background-color: #ffc107; color: #333; }
+.editButton:hover { background-color: #e0a800; }
+
+.deleteButton { background-color: #dc3545; }
+.deleteButton:hover { background-color: #c82333; }
+
+.qrButton { background-color: #28a745; }
+.qrButton:hover { background-color: #218838; }
+.qrButton:disabled { background-color: #cccccc; cursor: not-allowed; opacity: 0.7; }
+
+.link { background-color: #007bff; }
+.link:hover { background-color: #0056b3; color: white; text-decoration: none;}
+
+.sendButton { background-color: #17a2b8; }
+.sendButton:hover { background-color: #138496; }
+.sendButton:disabled { background-color: #cccccc; cursor: not-allowed; opacity: 0.7; }
+
+.backButton { background-color: #6c757d; }
+.backButton:hover { background-color: #5a6268; }
+.backButton:disabled { background-color: #cccccc; cursor: not-allowed; opacity: 0.7; }
+
+/* Đường kẻ phân cách giữa các section */
+.separator {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 2rem 0;
+}
+
+/* Tiêu đề của các section */
+h2 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    color: #444;
+    border-bottom: 1px solid #e0e0e0;
+}
+h3 {
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+/* Các khu vực chức năng */
+.qrSection, .manualAttendanceSection, .studentActions, .dailyAttendanceSection, .notificationSection {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background-color: #f9f9f9; /* Nền nhạt cho các khu vực */
+  border: 1px solid #e7e7e7;
+  border-radius: 5px;
+}
+
+/* Khu vực hiển thị QR code */
+.qrDisplay {
+    margin-top: 1rem;
+    padding: 1.5rem; /* Padding nhiều hơn */
+    text-align: center;
+    background-color: #fff;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    display: inline-block;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.qrDisplay p {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+.qrInstruction {
+    font-style: italic;
+    font-size: 0.85rem !important; /* Ưu tiên cỡ chữ nhỏ hơn */
+    color: #777 !important;
+}
+
+/* Hiển thị lỗi */
+.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 0.75rem 1.25rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem; /* Thêm khoảng cách dưới */
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+}
+
+/* Style cho textarea gửi thông báo (nếu có) */
+.textArea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 60px; /* Chiều cao tối thiểu */
+}
+
+/* Style cho input chọn ngày (nếu có) */
+.datePickerContainer {
+    margin-bottom: 1rem;
+}
+.dateInput {
+    padding: 5px 8px;
+    margin-left: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
