@@ -104,4 +104,3 @@ Dự án bao gồm:
 5.  **Tạo Pull Request:** Mở repository trên GitHub và tạo một Pull Request từ nhánh của bạn vào nhánh `main` để review và merge.
 
 ---
-Chúc bạn và nhóm làm việc hiệu quả!
