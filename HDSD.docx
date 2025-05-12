@@ -1,0 +1,645 @@
+Dưới đây là giải thích chức năng của từng file controller trong hệ thống:
+
+---
+
+ 1. attendanceController.js
+- Chức năng chính: Quản lý điểm danh (attendance) của sinh viên thông qua QR code hoặc thủ công.
+- Các phương thức chính:
+  - generateQRCodeData: Tạo dữ liệu QR code cho lớp học, chỉ giáo viên dạy lớp đó mới có quyền thực hiện.
+  - createAttendance: Xử lý việc điểm danh (thủ công hoặc quét QR). Kiểm tra quyền hạn, thời hạn QR, và trạng thái điểm danh.
+  - getAttendanceHistory: Lấy lịch sử điểm danh của người dùng hiện tại (sinh viên).
+  - updateAttendanceStatus: Cập nhật trạng thái điểm danh (chỉ giáo viên hoặc admin).
+  - getAttendanceByClassAndDate: Lấy danh sách điểm danh theo lớp và ngày (dành cho giáo viên hoặc admin).
+  - getAttendanceByUserAndClass: Lấy điểm danh của một sinh viên trong một lớp cụ thể.
+  - getAttendanceSummaryByClass: Tổng hợp thống kê điểm danh của lớp trong khoảng thời gian.
+
+---
+
+ 2. authController.js
+- Chức năng chính: Xử lý xác thực người dùng (đăng ký, đăng nhập, quản lý profile).
+- Các phương thức chính:
+  - register: Đăng ký tài khoản mới, hash mật khẩu và trả về token JWT.
+  - login: Xác thực người dùng, kiểm tra mật khẩu và trả về token JWT nếu thành công.
+  - getProfile: Lấy thông tin profile của người dùng hiện tại (loại bỏ mật khẩu).
+  - updateProfile: Cập nhật thông tin cá nhân (tên, email, student_id).
+  - changePassword: Đổi mật khẩu, yêu cầu mật khẩu cũ và mật khẩu mới.
+
+---
+
+ 3. classController.js
+- Chức năng chính: Quản lý lớp học (tạo, sửa, xóa, thêm/xóa sinh viên).
+- Các phương thức chính:
+  - createClass: Tạo lớp học mới (chỉ giáo viên).
+  - getClassById: Lấy thông tin lớp học theo ID.
+  - updateClass: Cập nhật thông tin lớp học (tên, mã lớp, giáo viên).
+  - deleteClass: Xóa lớp học (kiểm tra quyền trước khi xóa).
+  - getAllClasses: Lấy danh sách tất cả lớp học (có phân trang).
+  - getClassesByTeacherId: Lấy danh sách lớp học do giáo viên quản lý.
+  - addStudentToClass: Thêm sinh viên vào lớp (kiểm tra trùng lặp).
+  - removeStudentFromClass: Xóa sinh viên khỏi lớp.
+  - getStudentsInClass: Lấy danh sách sinh viên trong một lớp.
+
+---
+
+ 4. notificationController.js
+- Chức năng chính: Quản lý thông báo cho người dùng.
+- Các phương thức chính:
+  - getUnreadNotifications: Lấy danh sách thông báo chưa đọc của người dùng.
+  - getAllNotifications: Lấy tất cả thông báo (đã đọc và chưa đọc).
+  - markAsRead: Đánh dấu một thông báo là đã đọc.
+  - markAllAsRead: Đánh dấu tất cả thông báo là đã đọc.
+  - createNotification: Tạo thông báo mới (dành cho admin hoặc hệ thống).
+
+---
+
+ 5. userController.js
+- Chức năng chính: Quản lý người dùng (sinh viên, giáo viên, admin).
+- Các phương thức chính:
+  - getAllUsers: Lấy danh sách tất cả người dùng (có phân trang).
+  - getStudents: Lấy danh sách sinh viên.
+  - getTeachers: Lấy danh sách giáo viên.
+  - getUserById: Lấy thông tin chi tiết một người dùng theo ID.
+  - createUser: Tạo người dùng mới (dành cho admin, kiểm tra trùng username/email).
+  - updateUser: Cập nhật thông tin người dùng (username, email, role, v.v.).
+  - deleteUser: Xóa người dùng (kiểm tra quyền admin).
+
+---
+
+ Tổng quan
+- Các controller đều tuân thủ kiến trúc RESTful API, xử lý logic nghiệp vụ và tương tác với model.
+- Mỗi controller tập trung vào một nhóm chức năng riêng (attendance, auth, class, notification, user).
+- Có cơ chế kiểm tra quyền hạn (role-based) và xử lý lỗi chi tiết.
+
+Dưới đây là giải thích chi tiết chức năng của từng file middleware trong hệ thống:
+
+---
+
+ 1. authMiddleware.js
+- Chức năng chính: Xác thực người dùng dựa trên JWT token.
+- Phương thức chính:
+  - protect:
+    - Kiểm tra sự tồn tại của token trong header `Authorization` (dạng `Bearer <token>`).
+    - Xác thực token bằng `jwt.verify` và secret key từ config.
+    - Nếu token hợp lệ, lấy thông tin người dùng từ database và gắn vào `req.user` để các middleware/router sau sử dụng.
+    - Xử lý các lỗi liên quan đến token (hết hạn, không hợp lệ, người dùng không tồn tại).
+    - Trả về lỗi 401 nếu xác thực thất bại.
+
+---
+
+ 2. roleMiddleware.js
+- Chức năng chính: Phân quyền truy cập dựa trên vai trò (role) của người dùng.
+- Phương thức chính:
+  - restrictTo:
+    - Nhận danh sách các role được phép truy cập (ví dụ: `['admin', 'teacher']`).
+    - Kiểm tra role của người dùng (từ `req.user.role`) có nằm trong danh sách cho phép hay không.
+    - Nếu không có quyền, trả về lỗi 403.
+    - Được sử dụng kết hợp với `authMiddleware.protect` để đảm bảo người dùng đã đăng nhập trước khi kiểm tra quyền.
+
+---
+
+ 3. validationMiddleware.js
+- Chức năng chính: Kiểm tra tính hợp lệ của dữ liệu đầu vào từ client.
+- Phương thức chính:
+  - validate:
+    - Nhận một mảng các rule validation từ `express-validator` (ví dụ: kiểm tra độ dài username, định dạng email).
+    - Chạy tất cả các rule và thu thập lỗi (nếu có).
+    - Nếu có lỗi, trả về response 400 với danh sách lỗi chi tiết.
+    - Nếu dữ liệu hợp lệ, cho phép request đi tiếp đến controller.
+  - userValidationRules (ví dụ):
+    - Định nghĩa các rule validation cho dữ liệu người dùng (username, password, email, role, v.v.).
+    - Rule có thể tùy chỉnh tùy theo nghiệp vụ (ví dụ: role chỉ được phép là `student`, `teacher`, hoặc `admin`).
+
+---
+
+ Tổng quan
+1. authMiddleware.js:
+   - Bắt buộc cho các route yêu cầu đăng nhập.
+   - Giúp hệ thống biết "người dùng hiện tại là ai".
+
+2. roleMiddleware.js:
+   - Đảm bảo chỉ những role cụ thể mới được truy cập vào một số route (ví dụ: chỉ admin có quyền xóa người dùng).
+   - Luôn sử dụng sau `authMiddleware.protect`.
+
+3. validationMiddleware.js:
+   - Ngăn chặn dữ liệu không hợp lệ từ client trước khi xử lý logic nghiệp vụ.
+   - Có thể tái sử dụng cho nhiều route khác nhau.
+
+---
+
+ Ví dụ tích hợp middleware trong route
+```javascript
+const express = require('express');
+const router = express.Router();
+const authMiddleware = require('./middleware/authMiddleware');
+const roleMiddleware = require('./middleware/roleMiddleware');
+const validationMiddleware = require('./middleware/validationMiddleware');
+
+// Route yêu cầu đăng nhập + role admin
+router.get(
+  '/admin-only',
+  authMiddleware.protect,
+  roleMiddleware.restrictTo('admin'),
+  (req, res) => {
+    res.json({ message: 'Welcome, admin!' });
+  }
+);
+
+// Route với validation dữ liệu đầu vào
+router.post(
+  '/register',
+  validationMiddleware.validate(validationMiddleware.userValidationRules()),
+  (req, res) => {
+    // Xử lý đăng ký...
+  }
+);
+```
+Dưới đây là giải thích chi tiết chức năng của từng file model trong hệ thống:
+
+---
+
+ 1. Attendance.js
+- Chức năng chính: Quản lý dữ liệu điểm danh (attendance) trong cơ sở dữ liệu.
+- Các phương thức chính:
+  - findById(id): Lấy thông tin điểm danh theo ID.
+  - create(attendanceData): Tạo bản ghi điểm danh mới với các trường: `user_id`, `class_id`, `attendance_type`, `timestamp`, `quiz_answer_id`.
+  - update(id, attendanceData): Cập nhật thông tin điểm danh (có thể chỉ cập nhật một số trường cụ thể).
+  - delete(id): Xóa bản ghi điểm danh.
+  - getAttendanceByClassAndDate(classId, date): Lấy danh sách điểm danh của một lớp trong ngày cụ thể, kèm thông tin sinh viên.
+  - getAttendanceByUserAndClass(userId, classId): Lấy lịch sử điểm danh của một sinh viên trong một lớp (hoặc tất cả lớp nếu không chỉ định `classId`).
+  - getHistoryByUserId(userId): Lấy lịch sử điểm danh của một sinh viên, bao gồm thông tin lớp học.
+  - getAttendanceByUserClassDate(userId, classId, date): Kiểm tra xem sinh viên đã điểm danh trong lớp vào ngày cụ thể chưa.
+
+---
+
+ 2. Class.js
+- Chức năng chính: Quản lý dữ liệu lớp học và mối quan hệ giữa lớp học với giáo viên/sinh viên.
+- Các phương thức chính:
+  - findById(id): Lấy thông tin lớp học theo ID.
+  - create(classData): Tạo lớp học mới với các trường: `class_code`, `class_name`, `teacher_id`.
+  - update(id, classData): Cập nhật thông tin lớp học.
+  - delete(id): Xóa lớp học và các dữ liệu liên quan (điểm danh, sinh viên trong lớp).
+  - findByClassCode(classCode): Tìm lớp học theo mã lớp.
+  - getClassesByTeacherId(teacherId): Lấy danh sách lớp học do một giáo viên quản lý.
+  - getAllClasses(): Lấy tất cả lớp học (có phân trang).
+  - addStudentToClass(classId, userId): Thêm sinh viên vào lớp.
+  - removeStudentFromClass(classId, userId): Xóa sinh viên khỏi lớp.
+  - getStudentsInClass(classId): Lấy danh sách sinh viên trong một lớp.
+  - getClassesByStudentId(studentId): Lấy danh sách lớp học mà một sinh viên tham gia.
+
+---
+
+ 3. Notification.js
+- Chức năng chính: Quản lý thông báo (notifications) gửi đến người dùng.
+- Các phương thức chính:
+  - findById(id): Lấy thông báo theo ID.
+  - create(notificationData): Tạo thông báo mới với các trường: `user_id`, `message`, `timestamp`, `is_read`.
+  - markAsRead(id): Đánh dấu thông báo là đã đọc.
+  - markAllAsRead(userId): Đánh dấu tất cả thông báo của một người dùng là đã đọc.
+  - getUnreadNotifications(userId): Lấy danh sách thông báo chưa đọc của người dùng.
+  - getAllNotifications(userId): Lấy tất cả thông báo của người dùng (đã đọc và chưa đọc).
+  - delete(id): Xóa thông báo.
+
+---
+
+ 4. User.js
+- Chức năng chính: Quản lý dữ liệu người dùng (sinh viên, giáo viên, admin).
+- Các phương thức chính:
+  - findById(id): Lấy thông tin người dùng theo ID.
+  - findByUsername(username): Tìm người dùng theo tên đăng nhập.
+  - findByEmail(email): Tìm người dùng theo email.
+  - create(userData): Tạo người dùng mới với các trường: `username`, `password` (đã hash), `role`, `email`, `full_name`, `student_id`.
+  - update(id, userData): Cập nhật thông tin người dùng (trừ mật khẩu).
+  - delete(id): Đánh dấu người dùng là đã xóa (soft delete).
+  - changePassword(id, oldPassword, newPassword): Đổi mật khẩu (yêu cầu mật khẩu cũ).
+  - getAllUsers(): Lấy tất cả người dùng (có phân trang).
+  - getStudents(): Lấy danh sách sinh viên.
+  - getTeachers(): Lấy danh sách giáo viên.
+  - getUsersByRole(role): Lấy người dùng theo vai trò (role).
+
+---
+
+ Tổng quan
+1. Attendance.js:
+   - Tập trung vào việc ghi nhận và truy vấn dữ liệu điểm danh.
+   - Hỗ trợ cả điểm danh thủ công và QR code.
+   - Có các phương thức để thống kê, lọc theo lớp, ngày, hoặc sinh viên.
+
+2. Class.js:
+   - Quản lý thông tin lớp học và mối quan hệ giữa lớp với giáo viên/sinh viên.
+   - Xử lý việc thêm/xóa sinh viên khỏi lớp.
+
+3. Notification.js:
+   - Quản lý thông báo hệ thống, hỗ trợ đánh dấu trạng thái đọc/chưa đọc.
+   - Có thể mở rộng để gửi thông báo real-time (ví dụ: qua WebSocket).
+
+4. User.js:
+   - Xử lý các thao tác liên quan đến người dùng: đăng ký, đăng nhập, phân quyền.
+   - Bảo mật mật khẩu bằng bcrypt hash.
+   - Hỗ trợ phân trang và lọc theo vai trò.
+
+---
+
+ Lưu ý quan trọng
+- Các model đều sử dụng `pool.query` để tương tác với PostgreSQL, đảm bảo an toàn với SQL injection.
+- Mỗi phương thức đều có cơ chế bắt lỗi (try-catch) và ghi log chi tiết khi có lỗi.
+- Một số phương thức như `delete` trong `User.js` và `Class.js` sử dụng soft delete 
+(đánh dấu là đã xóa thay vì xóa hoàn toàn) để đảm bảo tính toàn vẹn dữ liệu.
+
+Dưới đây là giải thích chi tiết chức năng của từng file routes trong hệ thống:
+
+---
+
+ 1. attendanceRoutes.js
+- Chức năng chính: Định nghĩa các endpoint liên quan đến điểm danh (attendance).
+- Các route chính:
+  - POST /  
+    - Tạo bản ghi điểm danh (thủ công hoặc QR).  
+    - Yêu cầu: Đăng nhập (`authMiddleware.protect`), kiểm tra loại điểm danh (`manual` hoặc `QR`).  
+    - Controller: `attendanceController.createAttendance`.
+
+  - POST /qr/generate/:classId  
+    - Tạo dữ liệu QR code cho lớp học.  
+    - Yêu cầu: Đăng nhập và role `teacher`.  
+    - Controller: `attendanceController.generateQRCodeData`.
+
+  - GET /history  
+    - Lấy lịch sử điểm danh của người dùng hiện tại (sinh viên).  
+    - Yêu cầu: Đăng nhập và role `student`.  
+    - Controller: `attendanceController.getAttendanceHistory`.
+
+  - GET /class/:classId  
+    - Lấy điểm danh theo lớp và ngày.  
+    - Yêu cầu: Đăng nhập và role `teacher` hoặc `admin`.  
+    - Controller: `attendanceController.getAttendanceByClassAndDate`.
+
+  - PUT /:attendanceId/status  
+    - Cập nhật trạng thái điểm danh.  
+    - Yêu cầu: Đăng nhập và role `teacher` hoặc `admin`.  
+    - Validation: Kiểm tra trạng thái hợp lệ (`present`, `absent`, `permitted_absence`, `manual`, `QR`).  
+    - Controller: `attendanceController.updateAttendanceStatus`.
+
+---
+
+ 2. authRoutes.js
+- Chức năng chính: Định nghĩa các endpoint liên quan đến xác thực người dùng.
+- Các route chính:
+  - POST /register  
+    - Đăng ký tài khoản mới.  
+    - Validation: Kiểm tra dữ liệu đầu vào (username, password, email, full_name, role).  
+    - Controller: `authController.register`.
+
+  - POST /login  
+    - Đăng nhập và nhận token JWT.  
+    - Controller: `authController.login`.
+
+  - GET /profile  
+    - Lấy thông tin profile của người dùng hiện tại.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `authController.getProfile`.
+
+  - PUT /profile  
+    - Cập nhật thông tin profile.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `authController.updateProfile`.
+
+  - PUT /change-password  
+    - Đổi mật khẩu.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `authController.changePassword`.
+
+---
+
+ 3. classRoutes.js
+- Chức năng chính: Định nghĩa các endpoint liên quan đến lớp học.
+- Các route chính:
+  - POST /  
+    - Tạo lớp học mới.  
+    - Yêu cầu: Đăng nhập và role `teacher` hoặc `admin`.  
+    - Controller: `classController.createClass`.
+
+  - GET /:id  
+    - Lấy thông tin lớp học theo ID.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `classController.getClassById`.
+
+  - PUT /:id  
+    - Cập nhật thông tin lớp học.  
+    - Yêu cầu: Đăng nhập và role `teacher` hoặc `admin`.  
+    - Controller: `classController.updateClass`.
+
+  - DELETE /:id  
+    - Xóa lớp học.  
+    - Yêu cầu: Đăng nhập và role `teacher` hoặc `admin`.  
+    - Controller: `classController.deleteClass`.
+
+  - POST /:classId/students  
+    - Thêm sinh viên vào lớp.  
+    - Yêu cầu: Đăng nhập và role `teacher` hoặc `admin`.  
+    - Controller: `classController.addStudentToClass`.
+
+  - DELETE /:classId/students/:userId  
+    - Xóa sinh viên khỏi lớp.  
+    - Yêu cầu: Đăng nhập và role `teacher` hoặc `admin`.  
+    - Controller: `classController.removeStudentFromClass`.
+
+---
+
+ 4. notificationRoutes.js
+- Chức năng chính: Định nghĩa các endpoint liên quan đến thông báo.
+- Các route chính:
+  - GET /  
+    - Lấy tất cả thông báo của người dùng hiện tại.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `notificationController.getAllNotifications`.
+
+  - GET /unread  
+    - Lấy thông báo chưa đọc của người dùng hiện tại.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `notificationController.getUnreadNotifications`.
+
+  - PUT /:id/read  
+    - Đánh dấu thông báo là đã đọc.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `notificationController.markAsRead`.
+
+  - PUT /read  
+    - Đánh dấu tất cả thông báo là đã đọc.  
+    - Yêu cầu: Đăng nhập.  
+    - Controller: `notificationController.markAllAsRead`.
+
+---
+
+ 5. userRoutes.js
+- Chức năng chính: Định nghĩa các endpoint liên quan đến quản lý người dùng.
+- Các route chính:
+  - GET /  
+    - Lấy danh sách tất cả người dùng.  
+    - Yêu cầu: Đăng nhập và role `admin`.  
+    - Controller: `userController.getAllUsers`.
+
+  - GET /students  
+    - Lấy danh sách sinh viên.  
+    - Yêu cầu: Đăng nhập và role `admin` hoặc `teacher`.  
+    - Controller: `userController.getStudents`.
+
+  - GET /teachers  
+    - Lấy danh sách giáo viên.  
+    - Yêu cầu: Đăng nhập và role `admin`.  
+    - Controller: `userController.getTeachers`.
+
+  - POST /  
+    - Tạo người dùng mới.  
+    - Yêu cầu: Đăng nhập và role `admin`.  
+    - Controller: `userController.createUser`.
+
+  - PUT /:id  
+    - Cập nhật thông tin người dùng.  
+    - Yêu cầu: Đăng nhập và role `admin`.  
+    - Controller: `userController.updateUser`.
+
+  - DELETE /:id  
+    - Xóa người dùng (soft delete).  
+    - Yêu cầu: Đăng nhập và role `admin`.  
+    - Controller: `userController.deleteUser`.
+
+---
+
+ Tổng quan
+1. Middleware tích hợp:
+   - authMiddleware.protect: Bắt buộc người dùng phải đăng nhập.
+   - roleMiddleware.restrictTo: Giới hạn quyền truy cập dựa trên role (ví dụ: chỉ `admin` hoặc `teacher`).
+   - validationMiddleware.validate: Kiểm tra dữ liệu đầu vào (ví dụ: đăng ký, điểm danh).
+
+2. Phân quyền rõ ràng:
+   - Các route như tạo/xóa lớp, thêm/xóa sinh viên, quản lý người dùng đều yêu cầu role cao (`admin` hoặc `teacher`).
+   - Sinh viên chỉ có quyền xem lịch sử điểm danh hoặc thông báo cá nhân.
+
+3. Tính nhất quán:
+   - Mỗi route đều ánh xạ đến một phương thức cụ thể trong controller tương ứng.
+   - Tên route và phương thức HTTP (GET, POST, PUT, DELETE) phản ánh đúng chức năng (ví dụ: `POST /attendance` để tạo điểm danh, `GET /attendance/history` để lấy lịch sử).
+   Dưới đây là giải thích chi tiết về file notificationService.js và các chức năng của nó:
+
+---
+
+ 1. Tổng quan
+File notificationService.js là một dịch vụ (service) chịu trách nhiệm gửi thông báo (notifications) thông qua Firebase Cloud Messaging (FCM). Nó cũng hỗ trợ lưu trữ token đăng ký (registration token) của người dùng vào cơ sở dữ liệu để gửi thông báo sau này.
+
+---
+
+ 2. Các chức năng chính
+
+# a. Khởi tạo Firebase Admin SDK
+```javascript
+const admin = require('firebase-admin');
+const serviceAccount = require('../../../your-service-account-key.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+```
+- Mục đích:  
+  - Kết nối với Firebase bằng cách sử dụng service account key (tải từ Firebase Console).  
+  - `admin.initializeApp` khởi tạo Firebase Admin SDK để gửi thông báo từ server.
+
+# b. Gửi thông báo (`sendNotification`)
+```javascript
+exports.sendNotification = async (registrationToken, title, body, data) => {
+  const message = {
+    notification: { title, body },
+    data: data, // Dữ liệu tùy chọn (ví dụ: classId)
+    token: registrationToken, // Token FCM của thiết bị
+  };
+  try {
+    const response = await admin.messaging().send(message);
+    console.log('Successfully sent message:', response);
+    return response;
+  } catch (error) {
+    console.error('Error sending message:', error);
+    throw error;
+  }
+};
+```
+- Tham số:
+  - `registrationToken`: Token FCM của thiết bị người dùng (lưu trong DB).
+  - `title`: Tiêu đề thông báo.
+  - `body`: Nội dung thông báo.
+  - `data`: Dữ liệu tùy chỉnh (ví dụ: `{ classId: '123' }`).
+- Cách sử dụng:  
+  - Gọi hàm này sau khi thực hiện một hành động (ví dụ: điểm danh thành công).  
+  - Nếu gửi thất bại, lỗi sẽ được log và ném ra ngoài (có thể xử lý tùy theo nghiệp vụ).
+
+# c. Lưu token FCM (`saveRegistrationToken`)
+```javascript
+exports.saveRegistrationToken = async (userId, token) => {
+  try {
+    await pool.query('UPDATE users SET fcm_token = $1 WHERE id = $2', [token, userId]);
+  } catch (error) {
+    console.error("Error saving Registration Token", error);
+    throw error;
+  }
+};
+```
+- Mục đích:  
+  - Lưu token FCM của người dùng vào cột `fcm_token` trong bảng `users`.  
+  - Token này được gửi từ thiết bị di động khi người dùng đăng nhập hoặc mở ứng dụng.  
+- Cách sử dụng:  
+  - Gọi hàm này khi nhận được token từ client (ví dụ: qua API `/save-token`).
+
+---
+
+ 3. Ví dụ sử dụng trong controller
+```javascript
+// attendanceController.js
+const notificationService = require('../services/notificationService');
+
+exports.createAttendance = async (req, res) => {
+  try {
+    // Logic điểm danh...
+    const newAttendance = await Attendance.create(attendanceData);
+
+    // Gửi thông báo sau khi điểm danh thành công
+    const registrationToken = '...'; // Lấy từ DB (users.fcm_token)
+    await notificationService.sendNotification(
+      registrationToken,
+      'Điểm danh thành công',
+      'Bạn đã điểm danh lớp IT101 lúc 10:00 AM',
+      { classId: '123' }
+    );
+
+    res.status(201).json(newAttendance);
+  } catch (error) {
+    console.error('Failed to send notification:', error);
+    res.status(201).json(newAttendance); // Vẫn trả về kết quả dù thông báo lỗi
+  }
+};
+```
+- Lưu ý:  
+  - Nếu gửi thông báo thất bại, hệ thống vẫn tiếp tục xử lý (không làm gián đoạn nghiệp vụ chính).  
+  - Token FCM có thể được lấy từ DB qua `userId` (ví dụ: `SELECT fcm_token FROM users WHERE id = $1`).
+
+---
+
+ 4. Các trường hợp sử dụng khác
+1. Thông báo khi có bài tập mới:  
+   - Gọi `sendNotification` khi giáo viên tạo bài tập, gửi đến tất cả sinh viên trong lớp.
+2. Nhắc nhở điểm danh:  
+   - Gửi thông báo nhắc nhở vào thời gian bắt đầu lớp học.
+3. Cập nhật trạng thái:  
+   - Thông báo khi giáo viên cập nhật trạng thái điểm danh (ví dụ: chuyển từ "vắng" sang "có phép").
+
+---
+
+ 5. Lưu ý quan trọng
+- Bảo mật:  
+  - File `service-account-key.json` cần được bảo vệ, không commit lên GitHub.  
+  - Sử dụng biến môi trường (env) để lưu thông tin nhạy cảm.
+- Hiệu suất:  
+  - Nếu gửi thông báo hàng loạt, sử dụng `admin.messaging().sendMulticast()` thay vì gửi từng cái.
+- Xử lý lỗi:  
+  - Token FCM có thể hết hạn, cần cơ chế làm mới token hoặc xóa token không hợp lệ khỏi DB.
+
+---
+
+ Kết luận
+File notificationService.js đóng vai trò trung gian giữa hệ thống và Firebase Cloud Messaging, giúp gửi thông báo real-time đến người dùng một cách linh hoạt và hiệu quả. Các hàm trong service này có thể tích hợp vào bất kỳ controller nào cần thông báo (điểm danh, bài tập, nhắc nhở, v.v.).
+Dưới đây là giải thích chi tiết về file helpers.js và các chức năng của nó:
+
+---
+
+ 1. Tổng quan
+File helpers.js chứa các hàm tiện ích (utility functions) được sử dụng xuyên suốt ứng dụng để hỗ trợ xử lý các tác vụ phổ biến như định dạng dữ liệu, tạo mã ngẫu nhiên, v.v. Các hàm này giúp giảm sự trùng lặp code và tăng tính tái sử dụng.
+
+---
+
+ 2. Các hàm chính
+
+# a. `formatDate(date)`
+```javascript
+exports.formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+};
+```
+- Mục đích:  
+  Định dạng đối tượng `Date` thành chuỗi ngày tháng theo định dạng YYYY-MM-DD (ví dụ: `"2023-10-05"`).
+- Cách hoạt động:  
+  1. Chuyển đổi `date` thành chuỗi ISO (ví dụ: `"2023-10-05T14:48:00.000Z"`).  
+  2. Tách phần ngày tháng bằng cách chia chuỗi tại ký tự `'T'` và lấy phần đầu.  
+- Ví dụ sử dụng:  
+  ```javascript
+  const today = new Date();
+  console.log(formatDate(today)); // Output: "2023-10-05"
+  ```
+
+# b. `generateRandomCode(length)`
+```javascript
+exports.generateRandomCode = (length) => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+};
+```
+- Mục đích:  
+  Tạo một chuỗi mã ngẫu nhiên gồm chữ cái (hoa/thường) và số, với độ dài chỉ định.  
+- Tham số:  
+  - `length`: Độ dài của mã cần tạo (ví dụ: `6`).  
+- Cách hoạt động:  
+  1. Sử dụng chuỗi ký tự mẫu (`A-Z, a-z, 0-9`).  
+  2. Lặp `length` lần, mỗi lần chọn ngẫu nhiên một ký tự từ chuỗi mẫu.  
+- Ví dụ sử dụng:  
+  ```javascript
+  console.log(generateRandomCode(8)); // Output: "x7Fg9h2Y"
+  ```
+  - Ứng dụng thực tế:  
+    - Tạo mã QR code trong `attendanceController.js`.  
+    - Tạo mã lớp học hoặc mật khẩu tạm thời.
+
+---
+
+ 3. Ví dụ tích hợp trong ứng dụng
+# Trong `attendanceController.js` (sử dụng `generateRandomCode`):
+```javascript
+const { generateRandomCode } = require('../utils/helpers');
+
+exports.generateQRCodeData = async (req, res) => {
+    const secret = generateRandomCode(16); // Tạo mã bí mật dài 16 ký tự
+    // Lưu secret vào database hoặc bộ nhớ tạm...
+};
+```
+
+# Trong `userController.js` (sử dụng `formatDate`):
+```javascript
+const { formatDate } = require('../utils/helpers');
+
+exports.getUserProfile = (req, res) => {
+    const user = req.user;
+    const formattedDate = formatDate(user.created_at); // Định dạng ngày đăng ký
+    res.json({ ...user, created_at: formattedDate });
+};
+```
+
+---
+
+ 4. Lợi ích của việc sử dụng helpers
+- Tái sử dụng code: Tránh viết lặp lại logic định dạng ngày/tháng hoặc tạo mã ngẫu nhiên ở nhiều nơi.  
+- Dễ bảo trì: Thay đổi logic chỉ tại một file thay vì sửa nhiều file.  
+- Tính nhất quán: Đảm bảo định dạng dữ liệu đồng bộ trên toàn hệ thống (ví dụ: ngày tháng luôn là `YYYY-MM-DD`).
+
+---
+
+ 5. Gợi ý mở rộng
+Có thể thêm các hàm tiện ích khác vào file này khi cần, ví dụ:
+- Xử lý chuỗi:  
+  ```javascript
+  exports.capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  ```
+- Kiểm tra dữ liệu:  
+  ```javascript
+  exports.isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  ```
+
+---
+
+ Kết luận
+File helpers.js đóng vai trò như một bộ công cụ hỗ trợ, giúp các thành phần khác trong ứng dụng (controller, service) tập trung vào nghiệp vụ chính mà không phải xử lý các tác vụ phụ trợ lặp đi lặp lại. Các hàm trong file này cần được thiết kế đơn giản, dễ hiểu và có mục đích rõ ràng.
