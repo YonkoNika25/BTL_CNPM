@@ -1,0 +1,38 @@
+/* frontend/src/components/ClassList/ClassList.module.css */
+.container{
+    padding: 1rem;
+}
+.list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .link {
+    text-decoration: none;
+    color: #007bff;
+  }
+  .link:hover{
+    text-decoration: underline;
+  }
+
+  .teacherName {
+    font-style: italic;
+    color: #666;
+  }
+  .editButton, .deleteButton{
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+     background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .deleteButton{
+    background-color: red;
+  }

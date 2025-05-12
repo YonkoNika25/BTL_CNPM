@@ -1,0 +1,62 @@
+.container {
+    padding: 20px;
+  }
+
+  .profileInfo {
+    margin-bottom: 20px;
+  }
+
+  .profileInfo p {
+    margin-bottom: 5px;
+  }
+
+  .form {
+    margin-bottom: 20px;
+  }
+
+  .form div {
+    margin-bottom: 10px;
+  }
+
+  .form label {
+    display: block; /* Make labels block-level for better spacing */
+    margin-bottom: 5px;
+  }
+
+  .input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in width */
+  }
+
+  .button, .editButton, .changePasswordButton, .logoutButton, .cancelButton{
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px; /* Add some spacing between buttons */
+  }
+
+  .cancelButton {
+    background-color: #6c757d;
+  }
+  .logoutButton{
+     background-color: #dc3545;
+  }
+  .button:hover, .editButton:hover, .changePasswordButton:hover, .logoutButton:hover {
+    opacity: 0.8; /* Slightly darken on hover */
+  }
+
+  .message {
+    color: green;
+    margin-bottom: 10px;
+  }
+
+  .error {
+    color: red;
+    margin-bottom: 10px;
+  }

@@ -1,0 +1,66 @@
+/* src/frondend/src/pages/Attendance/AttendanceHistory.module.css */
+.container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 1rem auto;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Thêm bóng đổ nhẹ */
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f8f9fa; /* Màu nền header nhạt hơn */
+  font-weight: 600; /* Đậm vừa */
+  color: #495057;
+}
+
+.table tr:nth-child(even) {
+  background-color: #fdfdfd; /* Nền xen kẽ rất nhạt */
+}
+.table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Styling cho cột Status */
+.status {
+    display: inline-block; /* Để padding có tác dụng */
+    font-weight: bold;
+    padding: 4px 10px; /* Tăng padding */
+    border-radius: 12px; /* Bo tròn nhiều hơn */
+    text-align: center;
+    color: white;
+    font-size: 0.8rem; /* Nhỏ hơn chút */
+    text-transform: uppercase; /* Viết hoa */
+    min-width: 80px; /* Độ rộng tối thiểu */
+}
+/* Class CSS cho từng trạng thái */
+.present { background-color: #28a745; } /* Green */
+.absent { background-color: #dc3545; } /* Red */
+.permitted { background-color: #ffc107; color: #333; } /* Yellow */
+.unknown { background-color: #6c757d; } /* Gray */
+
+.error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}

@@ -1,0 +1,135 @@
+/* src/frondend/src/pages/Dashboard/Dashboard.module.css */
+
+.container {
+  max-width: 900px; /* Độ rộng tối đa */
+  margin: 2rem auto; /* Căn giữa trang, cách trên dưới */
+  padding: 2rem; /* Khoảng cách bên trong */
+  background-color: #f8f9fa; /* Màu nền nhạt */
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; /* Font hệ thống */
+}
+
+.title {
+  text-align: center;
+  color: #343a40; /* Màu tối hơn */
+  margin-bottom: 1.5rem;
+  font-size: 2rem; /* To hơn */
+  font-weight: 600;
+  border-bottom: 1px solid #dee2e6; /* Đường kẻ dưới tiêu đề */
+  padding-bottom: 0.75rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #6c757d; /* Màu xám */
+}
+
+.userInfo {
+  background-color: #ffffff; /* Nền trắng cho khu vực info */
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+  border: 1px solid #e9ecef; /* Viền nhạt hơn */
+}
+
+.userInfo p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  color: #495057; /* Màu chữ đậm hơn */
+}
+
+.userInfo p strong {
+  color: #212529; /* Màu chữ tiêu đề đậm */
+  margin-right: 0.5rem;
+}
+
+/* Khu vực chứa các chức năng theo role */
+.section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef; /* Đường kẻ phân cách rõ hơn */
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  color: #495057;
+  margin-bottom: 1rem;
+  font-weight: 500; /* Đậm vừa phải */
+}
+
+/* Style chung cho các Link/Button hành động */
+.link {
+  display: inline-block; /* Để có thể style padding/margin */
+  margin-right: 1rem; /* Khoảng cách giữa các nút */
+  margin-bottom: 0.75rem; /* Khoảng cách nếu xuống dòng */
+  padding: 0.7rem 1.1rem; /* Tăng padding */
+  color: white !important; /* Luôn chữ trắng */
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease; /* Thêm hiệu ứng đổ bóng */
+  font-size: 0.95rem;
+  background-color: #007bff; /* Màu xanh dương mặc định */
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+.link:hover {
+  background-color: #0056b3; /* Đậm hơn khi hover */
+  text-decoration: none;
+  color: white !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* Đổ bóng khi hover */
+}
+
+/* Màu sắc cụ thể cho các link/button khác nhau */
+.viewAllLink { background-color: #6c757d; }
+.viewAllLink:hover { background-color: #5a6268; }
+
+.profileLink { background-color: #17a2b8; }
+.profileLink:hover { background-color: #138496; }
+
+.notificationLink { background-color: #ffc107; color: #333 !important; } /* Vàng, chữ đen */
+.notificationLink:hover { background-color: #e0a800; color: #333 !important; }
+
+.adminLink { background-color: #fd7e14; } /* Cam */
+.adminLink:hover { background-color: #e36d0d; }
+
+/* Khu vực hành động chung (Profile, Logout) */
+.commonActions {
+  margin-top: 2.5rem; /* Tăng khoảng cách */
+  padding-top: 1.5rem;
+  border-top: 1px solid #dee2e6;
+  display: flex; /* Dàn hàng ngang */
+  justify-content: flex-start; /* Bắt đầu từ trái */
+  flex-wrap: wrap; /* Cho phép xuống dòng */
+  gap: 0.75rem; /* Khoảng cách giữa các nút */
+}
+
+/* Nút Logout */
+.logoutButton {
+  padding: 0.7rem 1.1rem;
+  background-color: #dc3545; /* Đỏ */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  margin-left: auto; /* Đẩy nút về cuối hàng */
+}
+.logoutButton:hover {
+  background-color: #c82333;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+/* Style cho lỗi (nếu có hiển thị trong dashboard) */
+.error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
