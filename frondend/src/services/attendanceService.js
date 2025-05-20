@@ -32,7 +32,9 @@ export const createAttendance = async (attendanceData) => {
       return response.data;
   } catch (error) {
       const message = error.response?.data?.message || 'Failed to record attendance';
-      console.error("createAttendance error:", message, error.response);
+      //console.error("createAttendance error:", message, error.response);
+      console.error(`createAttendance error: ${message}`, error?.response);
+
       throw new Error(message);
   }
 };

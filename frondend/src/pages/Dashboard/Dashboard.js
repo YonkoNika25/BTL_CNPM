@@ -97,7 +97,7 @@ function DashboardPage() {
             )}
 
             {/* --- Phần chỉ dành cho Admin --- */}
-            {user.role === 'admin' && (
+            {( user.role === 'admin') && (
                  <div className={styles.section}>
                       <h2 className={styles.sectionTitle}>Admin Tools</h2>
                       {/* Link đến trang quản lý người dùng (nếu có) */}

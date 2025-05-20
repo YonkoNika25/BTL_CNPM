@@ -20,6 +20,8 @@ app.use('/api/classes', classRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/users', userRoutes);
 
+
+
 // Error handling middleware (đặt cuối cùng)
 app.use((err, req, res, next) => {
   console.error(err.stack); // Log lỗi chi tiết

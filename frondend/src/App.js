@@ -62,6 +62,9 @@ function App() {
                          }
              />
 
+             {/* --- Route chỉ dành cho Giáo viên --- */}
+             {/* Chỉ cho phép truy cập nếu đã đăng nhập VÀ là giáo viên */}
+
              {/* --- Route chỉ dành cho Admin --- */}
              {/* Chỉ cho phép truy cập nếu đã đăng nhập VÀ là admin */}
              {/* Ví dụ:

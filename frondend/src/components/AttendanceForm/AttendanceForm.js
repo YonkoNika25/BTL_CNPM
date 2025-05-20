@@ -13,15 +13,15 @@ function AttendanceForm({ classId }) {
         event.preventDefault();
         setError('');
         setSuccess('');
-
         try {
             const attendanceData = {
-                user_id: userId, // Hoặc lấy từ form, hoặc dropdown chọn user
+                userId: userId, // Hoặc lấy từ form, hoặc dropdown chọn user
                 class_id: classId,
                 attendance_type: attendanceType,
                 timestamp: new Date().toISOString(), // Hoặc lấy từ form (nếu cần)
                 // quiz_answer_id: ... (nếu có)
             };
+
 
             await attendanceService.createAttendance(attendanceData);
             setSuccess('Attendance recorded successfully!');
@@ -29,7 +29,8 @@ function AttendanceForm({ classId }) {
             // Có thể reset form, hoặc cập nhật UI (ví dụ: thêm vào danh sách điểm danh)
 
         } catch (error) {
-            setError(error); // Hiển thị lỗi từ service
+            //setError(error); // Hiển thị lỗi từ service
+            setError(error.message || 'Failed to record attendance');
         }
     };
 

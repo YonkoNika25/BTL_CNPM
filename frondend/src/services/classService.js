@@ -86,6 +86,7 @@ export const getClassesByTeacherId = async (teacherId, limit, offset) => {
     if (offset) params.offset = offset;
     // Gọi API backend tương ứng (ví dụ: GET /classes/teacher/:teacherId)
     const response = await api.get(`/classes/teacher/${teacherId}`, { params });
+    console.log("be in get class by teacher id")
     return response.data;
   } catch (error) {
     throw error.response?.data?.message || 'Failed to get classes by teacher';
