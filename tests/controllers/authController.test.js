@@ -1,14 +1,14 @@
 // tests/controllers/authController.test.js
 
 // 1. Import các module cần thiết
-const authController = require('../../src/controllers/authController'); // Đường dẫn tới file controller của bạn
+const authController = require('../../src/controllers/authController');
 const User = require('../../src/models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const httpMocks = require('node-mocks-http');
 const config = require('../../src/config');
 
-// 2. Mock các dependencies (QUAN TRỌNG: Để không kết nối DB thật)
+// 2. Mock các dependencies 
 jest.mock('../../src/models/User');
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
@@ -48,7 +48,7 @@ describe('Auth Controller Unit Tests', () => {
             const newUser = { id: 1, username: 'testuser', role: 'student', password: 'hashedPassword123' };
             User.create.mockResolvedValue(newUser);
             
-            // Giả lập jwt.sign (xử lý cho promisify trong code của bạn)
+            // Giả lập jwt.sign (xử lý cho promisify)
             // Vì code dùng promisify(jwt.sign), ta cần mock implementation kiểu callback
             jwt.sign.mockImplementation((payload, secret, options, callback) => {
                 callback(null, 'mockToken123');
@@ -251,4 +251,5 @@ describe('Auth Controller Unit Tests', () => {
             expect(res._getJSONData()).toEqual({ message: 'User not found.' });
         });
     });
+
 });
