@@ -1,7 +1,7 @@
 // backend/tests/system_flow.test.js
 
 const request = require('supertest');
-const app = require('../src/app'); // Đảm bảo đường dẫn trỏ đúng file app.js của bạn
+const app = require('../src/app');
 
 // Tạo dữ liệu ngẫu nhiên để tránh lỗi "User already exists" khi chạy test nhiều lần
 const generateRandomId = () => Math.floor(Math.random() * 10000);
@@ -177,4 +177,5 @@ describe('HỆ THỐNG ĐIỂM DANH - SYSTEM TESTING FLOW', () => {
         expect(studentRecord).toBeDefined();
         expect(studentRecord.attendance_type).toEqual('QR');
     });
+
 });
