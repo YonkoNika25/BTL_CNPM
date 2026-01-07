@@ -100,7 +100,7 @@ describe('HỆ THỐNG ĐIỂM DANH - CÁC TÍNH NĂNG MỞ RỘNG & BẢO MẬT
             .send({ status: 'present' });
 
         // Nếu route chưa define đúng trong router, test này sẽ fail 404
-        // Dựa trên code bạn gửi, router là: router.put('/:attendanceId/status', ...)
+        // router là: router.put('/:attendanceId/status', ...)
         expect(res.statusCode).toEqual(200);
         expect(res.body.attendance_type).toEqual('present');
     });
@@ -143,8 +143,8 @@ describe('HỆ THỐNG ĐIỂM DANH - CÁC TÍNH NĂNG MỞ RỘNG & BẢO MẬT
     });
 
     // --- PHẦN 4: THÔNG BÁO (SRS 3.2.6) ---
-    // Lưu ý: Controller Notification có, nhưng Router chưa thấy route POST để tạo thông báo test.
-    // Ta sẽ test việc lấy danh sách rỗng hoặc đánh dấu đã đọc.
+    // Controller Notification có, nhưng Router chưa thấy route POST để tạo thông báo test.
+    // Ta test việc lấy danh sách rỗng hoặc đánh dấu đã đọc.
 
     test('NOTI_GET: Lấy danh sách thông báo chưa đọc', async () => {
         const res = await request(app)
@@ -154,4 +154,5 @@ describe('HỆ THỐNG ĐIỂM DANH - CÁC TÍNH NĂNG MỞ RỘNG & BẢO MẬT
         expect(res.statusCode).toEqual(200);
         expect(Array.isArray(res.body)).toBeTruthy();
     });
+
 });
