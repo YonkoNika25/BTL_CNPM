@@ -1,8 +1,6 @@
 // tests/services/notificationService.test.js
 
-// 1. Mock file JSON service account (QUAN TRỌNG: Để tránh lỗi "Cannot find module")
-// Đường dẫn phải khớp chính xác với require trong code của bạn (tính từ file test)
-// Vì file test nằm ở tests/services, nên đường dẫn ../../../your-service-account-key.json trỏ ra root
+// 1. Mock file JSON service account
 jest.mock('../../../your-service-account-key.json', () => ({
     type: "service_account",
     project_id: "test-project"
@@ -90,4 +88,5 @@ describe('Notification Service Tests', () => {
                 .rejects.toThrow('DB Error');
         });
     });
+
 });
